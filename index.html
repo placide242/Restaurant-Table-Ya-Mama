@@ -1,0 +1,973 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Table Ya Mama</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --red:       #e03e2d;
+    --red-dark:  #c23222;
+    --red-light: #fde8e5;
+    --bg:        #faf5f0;
+    --bg2:       #f5ede6;
+    --dark:      #180e07;
+    --text:      #3a2519;
+    --muted:     #7a6558;
+    --white:     #ffffff;
+    --radius:    16px;
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+  html { scroll-behavior:smooth; }
+  body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden; }
+
+  /* SCROLLBAR */
+  ::-webkit-scrollbar { width:6px; }
+  ::-webkit-scrollbar-track { background:var(--bg2); }
+  ::-webkit-scrollbar-thumb { background:var(--red); border-radius:3px; }
+
+  /*  NAVBAR  */
+  nav {
+    position:fixed; top:0; left:0; right:0; z-index:100;
+    background:rgba(250,245,240,.96); backdrop-filter:blur(10px);
+    border-bottom:1px solid rgba(224,62,45,.1);
+    height:72px; display:flex; align-items:center;
+    justify-content:space-between; padding:0 5%;
+  }
+  .logo {
+    font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:900;
+    color:var(--red); text-decoration:none; letter-spacing:-.5px;
+  }
+  .nav-links { display:flex; list-style:none; gap:2.2rem; align-items:center; }
+  .nav-links a {
+    text-decoration:none; color:var(--text); font-size:.93rem; font-weight:500;
+    position:relative; transition:color .2s;
+  }
+  .nav-links a::after {
+    content:''; position:absolute; bottom:-4px; left:0; right:0; height:2px;
+    background:var(--red); border-radius:2px; transform:scaleX(0);
+    transition:transform .25s; transform-origin:left;
+  }
+  .nav-links a:hover { color:var(--red); }
+  .nav-links a:hover::after { transform:scaleX(1); }
+
+  .btn-cart {
+    display:flex; align-items:center; gap:.5rem;
+    background:var(--red); color:#fff; border:none;
+    padding:.6rem 1.4rem; border-radius:50px;
+    font-size:.93rem; font-weight:600; cursor:pointer;
+    transition:background .2s, transform .15s; position:relative;
+  }
+  .btn-cart:hover { background:var(--red-dark); transform:scale(1.03); }
+  .cart-badge {
+    background:#fff; color:var(--red); border-radius:50%;
+    width:20px; height:20px; font-size:.7rem; font-weight:700;
+    display:none; align-items:center; justify-content:center;
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    position:relative; min-height:100vh;
+    display:flex; align-items:center; overflow:hidden;
+  }
+  .hero-bg {
+    position:absolute; inset:0;
+    background:url('https://images.unsplash.com/photo-1604329760661-e71dc83f8f26?w=1800&q=85') center/cover no-repeat;
+    filter:brightness(.52);
+    transform:scale(1.04);
+    animation:heroZoom 18s ease-in-out infinite alternate;
+  }
+  @keyframes heroZoom { from{transform:scale(1.04)} to{transform:scale(1.1)} }
+
+  .hero-content {
+    position:relative; z-index:2;
+    padding:0 5%; max-width:700px; color:#fff;
+    padding-top:72px;
+  }
+  .hero h1 {
+    font-family:'Playfair Display',serif;
+    font-size:clamp(3.6rem,8vw,6.8rem);
+    font-weight:900; line-height:1;
+    margin-bottom:1.2rem;
+  }
+  .hero p {
+    font-size:1.08rem; line-height:1.7;
+    color:rgba(255,255,255,.85); margin-bottom:2.2rem; max-width:520px;
+  }
+  .hero-btns { display:flex; gap:1rem; flex-wrap:wrap; margin-bottom:3.5rem; }
+
+  .btn-primary {
+    background:var(--red); color:#fff; border:none;
+    padding:.85rem 2rem; border-radius:50px;
+    font-size:.97rem; font-weight:600; cursor:pointer;
+    display:inline-flex; align-items:center; gap:.5rem;
+    text-decoration:none; transition:background .2s, transform .15s, box-shadow .2s;
+  }
+  .btn-primary:hover {
+    background:var(--red-dark); transform:translateY(-2px);
+    box-shadow:0 8px 24px rgba(224,62,45,.4);
+  }
+  .btn-outline {
+    background:rgba(255,255,255,.1); color:#fff;
+    border:2px solid rgba(255,255,255,.65);
+    padding:.85rem 2rem; border-radius:50px;
+    font-size:.97rem; font-weight:600; cursor:pointer;
+    text-decoration:none; transition:all .2s; display:inline-flex;
+  }
+  .btn-outline:hover { background:rgba(255,255,255,.2); border-color:#fff; }
+
+  .hero-stats {
+    display:flex; gap:0; align-items:stretch;
+    border-top:1px solid rgba(255,255,255,.22); padding-top:1.6rem;
+  }
+  .stat {
+    padding:0 2rem 0 0; position:relative;
+  }
+  .stat:not(:last-child)::after {
+    content:''; position:absolute; right:1rem; top:0; bottom:0;
+    width:1px; background:rgba(255,255,255,.2);
+  }
+  .stat:first-child { padding-left:0; }
+  .stat-val {
+    font-family:'Playfair Display',serif;
+    font-size:2.1rem; font-weight:900; color:#fff;
+    display:flex; align-items:center; gap:.15rem;
+  }
+  .star { color:#f5a623; font-size:1.6rem; }
+  .stat-lbl { font-size:.78rem; color:rgba(255,255,255,.6); margin-top:.1rem; }
+
+  .hero-scroll {
+    position:absolute; bottom:2.5rem; left:50%;
+    transform:translateX(-50%); z-index:2;
+    display:flex; flex-direction:column; align-items:center;
+    gap:.5rem; color:rgba(255,255,255,.65); font-size:.78rem;
+    cursor:pointer; letter-spacing:.06em;
+  }
+  .scroll-mouse {
+    width:30px; height:48px;
+    border:2px solid rgba(255,255,255,.45); border-radius:15px;
+    display:flex; justify-content:center; padding-top:7px;
+  }
+  .scroll-mouse::after {
+    content:''; width:5px; height:9px;
+    background:#fff; border-radius:3px;
+    animation:scrollDot 1.6s ease-in-out infinite;
+  }
+  @keyframes scrollDot { 0%{transform:translateY(0);opacity:1} 100%{transform:translateY(14px);opacity:0} }
+
+  /* ─── SECTIONS ─── */
+  section { padding:6rem 5%; }
+  .section-center { text-align:center; }
+  .badge {
+    display:inline-flex; align-items:center; gap:.4rem;
+    background:var(--red-light); color:var(--red);
+    padding:.38rem 1rem; border-radius:50px;
+    font-size:.82rem; font-weight:600; margin-bottom:1.1rem;
+  }
+  .sec-title {
+    font-family:'Playfair Display',serif;
+    font-size:clamp(2rem,4vw,3rem); font-weight:900;
+    color:var(--dark); margin-bottom:.7rem;
+  }
+  .sec-sub {
+    color:var(--muted); font-size:.97rem; line-height:1.65;
+    max-width:600px; margin:0 auto 3rem;
+  }
+
+  /* ─── SPÉCIALITÉS — image overlay cards ─── */
+  #specialites { background:var(--bg); }
+
+  .specials-grid {
+    display:grid; grid-template-columns:repeat(3,1fr); gap:1.6rem;
+  }
+  .special-card {
+    position:relative; border-radius:20px; overflow:hidden;
+    aspect-ratio:4/5; cursor:pointer;
+    box-shadow:0 4px 24px rgba(30,10,0,.14);
+    transition:transform .28s, box-shadow .28s;
+  }
+  .special-card:hover { transform:translateY(-6px) scale(1.01); box-shadow:0 16px 48px rgba(30,10,0,.22); }
+  .special-card img {
+    width:100%; height:100%; object-fit:cover; display:block;
+    transition:transform .55s ease;
+  }
+  .special-card:hover img { transform:scale(1.06); }
+  .special-overlay {
+    position:absolute; inset:0;
+    background:linear-gradient(to top, rgba(15,6,2,.82) 0%, rgba(15,6,2,.28) 55%, transparent 100%);
+  }
+  .special-text {
+    position:absolute; bottom:0; left:0; right:0;
+    padding:1.6rem 1.8rem;
+  }
+  .special-text h3 {
+    font-family:'Playfair Display',serif;
+    font-size:1.5rem; font-weight:900; color:#fff; margin-bottom:.3rem;
+  }
+  .special-text p { font-size:.88rem; color:rgba(255,255,255,.75); }
+
+  /* ─── MENU ─── */
+  #menu { background:#fff; }
+
+  .filter-tabs {
+    display:flex; gap:.75rem; justify-content:center;
+    margin-bottom:2.8rem; flex-wrap:wrap;
+  }
+  .tab {
+    padding:.52rem 1.5rem; border-radius:50px;
+    border:2px solid #e2d6cf; background:#fff;
+    color:var(--text); font-size:.92rem; font-weight:500;
+    cursor:pointer; transition:all .2s;
+  }
+  .tab:hover, .tab.active {
+    background:var(--red); border-color:var(--red); color:#fff;
+  }
+
+  .menu-grid {
+    display:grid; grid-template-columns:repeat(4,1fr); gap:1.4rem;
+  }
+  .menu-card {
+    background:#fff; border-radius:var(--radius); overflow:hidden;
+    border:1.5px solid #f0e6e0;
+    box-shadow:0 2px 10px rgba(50,20,8,.05);
+    transition:transform .22s, box-shadow .22s, border-color .22s;
+  }
+  .menu-card:hover {
+    transform:translateY(-4px); box-shadow:0 10px 32px rgba(50,20,8,.12);
+    border-color:var(--red-light);
+  }
+  .menu-card-img {
+    width:100%; height:195px; object-fit:cover; display:block;
+  }
+  .menu-card-body { padding:1.1rem 1.15rem 1.25rem; }
+  .menu-card-name {
+    font-family:'Playfair Display',serif;
+    font-size:1.12rem; font-weight:700; color:var(--dark); margin-bottom:.35rem;
+  }
+  .menu-card-desc { color:var(--muted); font-size:.82rem; line-height:1.5; margin-bottom:1rem; }
+  .menu-card-footer { display:flex; align-items:center; justify-content:space-between; }
+  .menu-price {
+    font-family:'Playfair Display',serif;
+    font-size:1.28rem; font-weight:700; color:var(--red);
+  }
+  .btn-add {
+    width:38px; height:38px; border-radius:50%;
+    background:var(--red); color:#fff; border:none;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:background .2s, transform .15s;
+    flex-shrink:0;
+  }
+  .btn-add:hover { background:var(--red-dark); transform:scale(1.15); }
+
+  /* ─── À PROPOS ─── */
+  #apropos {
+    background:var(--bg2);
+    display:grid; grid-template-columns:1fr 1fr;
+    gap:5rem; align-items:center;
+  }
+  .about-img-wrap {
+    position:relative; border-radius:22px; overflow:hidden; height:500px;
+  }
+  .about-img-wrap img { width:100%; height:100%; object-fit:cover; }
+  .about-badge {
+    position:absolute; bottom:2rem; right:-1.5rem;
+    background:var(--red); color:#fff;
+    padding:1.2rem 1.8rem; border-radius:16px;
+    text-align:center;
+    box-shadow:0 8px 28px rgba(224,62,45,.45);
+  }
+  .about-badge-num {
+    font-family:'Playfair Display',serif;
+    font-size:2.2rem; font-weight:900; line-height:1;
+  }
+  .about-badge-lbl { font-size:.8rem; margin-top:.2rem; opacity:.9; }
+
+  .about-content .sec-title { text-align:left; }
+  .about-content .sec-sub { text-align:left; margin:0 0 2rem; }
+
+  .about-features { display:flex; flex-direction:column; gap:1.3rem; margin-bottom:2rem; }
+  .feat-row { display:flex; align-items:flex-start; gap:1.1rem; }
+  .feat-icon {
+    width:52px; height:52px; border-radius:14px;
+    background:var(--red-light); color:var(--red);
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .feat-icon svg { width:24px; height:24px; }
+  .feat-text strong { display:block; font-size:.96rem; color:var(--dark); margin-bottom:.18rem; }
+  .feat-text span { font-size:.84rem; color:var(--muted); line-height:1.5; }
+
+  /* ─── LIVRAISON ─── */
+  #livraison { background:var(--red-light); }
+  .delivery-grid {
+    display:grid; grid-template-columns:repeat(4,1fr);
+    gap:2rem; margin-bottom:3.5rem;
+  }
+  .delivery-card { text-align:center; }
+  .delivery-icon {
+    width:76px; height:76px; border-radius:20px;
+    background:var(--red); color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    margin:0 auto 1.1rem;
+    box-shadow:0 6px 20px rgba(224,62,45,.32);
+  }
+  .delivery-icon svg { width:32px; height:32px; }
+  .delivery-card strong { display:block; font-size:1rem; font-weight:600; color:var(--dark); margin-bottom:.3rem; }
+  .delivery-card span { color:var(--muted); font-size:.88rem; }
+
+  .promo-banner {
+    background:var(--red); border-radius:22px;
+    padding:3.2rem 2rem; text-align:center;
+    background:linear-gradient(135deg,#e03e2d 0%,#c23222 100%);
+    box-shadow:0 12px 40px rgba(224,62,45,.35);
+  }
+  .promo-banner h2 {
+    font-family:'Playfair Display',serif;
+    font-size:2.1rem; font-weight:900; color:#fff; margin-bottom:.7rem;
+  }
+  .promo-banner p { font-size:.97rem; color:rgba(255,255,255,.88); margin-bottom:1.6rem; max-width:520px; margin-left:auto; margin-right:auto; }
+  .btn-white {
+    background:#fff; color:var(--red); border:none;
+    padding:.9rem 2.4rem; border-radius:50px;
+    font-size:.97rem; font-weight:700; cursor:pointer;
+    transition:transform .15s, box-shadow .15s;
+  }
+  .btn-white:hover { transform:scale(1.04); box-shadow:0 6px 20px rgba(0,0,0,.18); }
+
+  /* ─── FOOTER ─── */
+  footer { background:#150a03; color:rgba(255,255,255,.65); padding:4.5rem 5% 2rem; }
+  .footer-grid {
+    display:grid; grid-template-columns:1.7fr 1fr 1.2fr;
+    gap:3.5rem; margin-bottom:3rem;
+  }
+  .footer-logo {
+    font-family:'Playfair Display',serif;
+    font-size:1.5rem; font-weight:900; color:var(--red); margin-bottom:.9rem;
+  }
+  .footer-desc { font-size:.86rem; line-height:1.7; color:rgba(255,255,255,.48); margin-bottom:1.3rem; }
+  .social-row { display:flex; gap:.7rem; }
+  .social-btn {
+    width:40px; height:40px; border-radius:50%;
+    background:var(--red); color:#fff; border:none;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:background .2s, transform .15s;
+  }
+  .social-btn:hover { background:var(--red-dark); transform:scale(1.1); }
+  .social-btn svg { width:18px; height:18px; }
+
+  .footer-col h4 { color:#fff; font-size:.97rem; font-weight:700; margin-bottom:1.3rem; }
+  .footer-links { list-style:none; display:flex; flex-direction:column; gap:.65rem; }
+  .footer-links a {
+    text-decoration:none; color:rgba(255,255,255,.48);
+    font-size:.88rem; transition:color .2s;
+  }
+  .footer-links a:hover { color:var(--red); }
+
+  .contact-rows { display:flex; flex-direction:column; gap:.85rem; }
+  .contact-row { display:flex; align-items:flex-start; gap:.75rem; font-size:.86rem; color:rgba(255,255,255,.5); }
+  .contact-row svg { width:17px; height:17px; color:var(--red); flex-shrink:0; margin-top:1px; }
+
+  .footer-bottom {
+    border-top:1px solid rgba(255,255,255,.08);
+    padding-top:1.6rem; text-align:center;
+    font-size:.8rem; color:rgba(255,255,255,.28);
+  }
+
+  /* ─── CART DRAWER ─── */
+  .overlay {
+    position:fixed; inset:0; background:rgba(0,0,0,.45);
+    z-index:200; opacity:0; pointer-events:none; transition:opacity .3s;
+  }
+  .overlay.open { opacity:1; pointer-events:all; }
+  .cart-drawer {
+    position:fixed; top:0; right:0;
+    width:390px; max-width:100vw; height:100vh;
+    background:#fff; z-index:201;
+    transform:translateX(100%); transition:transform .3s cubic-bezier(.4,0,.2,1);
+    display:flex; flex-direction:column;
+  }
+  .cart-drawer.open { transform:translateX(0); }
+  .cart-head {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:1.4rem 1.6rem; border-bottom:1px solid #f2e8e3;
+  }
+  .cart-head h3 {
+    font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--dark);
+    display:flex; align-items:center; gap:.6rem;
+  }
+  .cart-close {
+    background:none; border:none; cursor:pointer; color:var(--muted);
+    padding:.3rem; border-radius:8px; transition:background .15s;
+    display:flex;
+  }
+  .cart-close:hover { background:var(--bg2); }
+  .cart-close svg { width:20px; height:20px; }
+  .cart-body { flex:1; overflow-y:auto; padding:1rem 1.6rem; }
+  .cart-empty { text-align:center; color:var(--muted); margin-top:4rem; font-size:.93rem; }
+  .cart-empty svg { width:56px; height:56px; margin:0 auto 1rem; display:block; opacity:.35; }
+  .cart-item {
+    display:flex; align-items:center; gap:1rem;
+    padding:.9rem 0; border-bottom:1px solid #f5ece7;
+  }
+  .cart-item img { width:58px; height:58px; border-radius:12px; object-fit:cover; flex-shrink:0; }
+  .ci-info { flex:1; min-width:0; }
+  .ci-name { font-weight:600; font-size:.88rem; color:var(--dark); margin-bottom:.2rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .ci-price { color:var(--red); font-weight:700; font-size:.88rem; }
+  .ci-qty { display:flex; align-items:center; gap:.5rem; }
+  .ci-qty button {
+    width:27px; height:27px; border-radius:50%;
+    border:1.5px solid #ddd; background:none; cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    font-size:.95rem; color:var(--text); transition:all .15s;
+  }
+  .ci-qty button:hover { border-color:var(--red); color:var(--red); }
+  .ci-qty span { font-weight:700; font-size:.88rem; min-width:18px; text-align:center; }
+  .cart-foot { padding:1.2rem 1.6rem; border-top:1px solid #f2e8e3; }
+  .cart-total-row { display:flex; justify-content:space-between; margin-bottom:1rem; }
+  .cart-total-row strong { font-size:1rem; color:var(--dark); }
+  .cart-total-row span { font-size:1.15rem; font-weight:700; color:var(--red); }
+  .btn-checkout {
+    width:100%; background:var(--red); color:#fff; border:none;
+    padding:1rem; border-radius:50px; font-size:.97rem; font-weight:700;
+    cursor:pointer; transition:background .2s;
+  }
+  .btn-checkout:hover { background:var(--red-dark); }
+
+  /* ─── TOAST ─── */
+  .toast {
+    position:fixed; bottom:2rem; left:50%;
+    transform:translateX(-50%) translateY(60px);
+    background:var(--dark); color:#fff;
+    padding:.72rem 1.5rem; border-radius:50px;
+    font-size:.88rem; z-index:400; white-space:nowrap;
+    transition:transform .35s cubic-bezier(.4,0,.2,1);
+    display:flex; align-items:center; gap:.5rem;
+  }
+  .toast.show { transform:translateX(-50%) translateY(0); }
+
+  /* ─── ANIMATIONS ─── */
+  .reveal { opacity:0; transform:translateY(28px); transition:opacity .55s ease, transform .55s ease; }
+  .reveal.visible { opacity:1; transform:translateY(0); }
+
+  /* ─── RESPONSIVE ─── */
+  @media(max-width:1100px) {
+    .menu-grid { grid-template-columns:repeat(2,1fr); }
+    .delivery-grid { grid-template-columns:repeat(2,1fr); }
+    #apropos { grid-template-columns:1fr; }
+    .about-img-wrap { height:340px; }
+    .about-badge { right:1rem; }
+  }
+  @media(max-width:768px) {
+    nav { padding:0 4%; }
+    .nav-links { display:none; }
+    .specials-grid { grid-template-columns:1fr; }
+    .menu-grid { grid-template-columns:1fr; }
+    .footer-grid { grid-template-columns:1fr; gap:2rem; }
+    section { padding:4rem 4%; }
+    .hero-content { padding-top:80px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ─── OVERLAY & CART DRAWER ─── -->
+<div class="overlay" id="overlay" onclick="closeCart()"></div>
+<div class="cart-drawer" id="cartDrawer">
+  <div class="cart-head">
+    <h3>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;color:var(--red)"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      Mon Panier
+    </h3>
+    <button class="cart-close" onclick="closeCart()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div class="cart-body" id="cartBody">
+    <div class="cart-empty" id="cartEmpty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+      Votre panier est vide.
+    </div>
+  </div>
+  <div class="cart-foot" id="cartFoot" style="display:none">
+    <div class="cart-total-row">
+      <strong>Total</strong>
+      <span id="cartTotal">0.00€</span>
+    </div>
+    <button class="btn-checkout">Commander →</button>
+  </div>
+</div>
+
+<!-- ─── TOAST ─── -->
+<div class="toast" id="toast"></div>
+
+<!-- ─── NAVBAR ─── -->
+<nav>
+  <a href="#accueil" class="logo">Table Ya Mama</a>
+  <ul class="nav-links">
+    <li><a href="#accueil">Accueil</a></li>
+    <li><a href="#menu">Menu</a></li>
+    <li><a href="#apropos">À propos</a></li>
+    <li><a href="#livraison">Livraison</a></li>
+    <li><a href="#contact">Contact</a></li>
+  </ul>
+  <button class="btn-cart" onclick="openCart()">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+    Panier
+    <span class="cart-badge" id="cartBadge">0</span>
+  </button>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero" id="accueil">
+  <div class="hero-bg"></div>
+  <div class="hero-content">
+    <h1>Table Ya<br>Mama</h1>
+    <p>Découvrez l'authenticité de la cuisine congolaise et africaine, préparée avec passion et livrée chez vous.</p>
+    <div class="hero-btns">
+      <a href="#menu" class="btn-primary">
+        Commander maintenant
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+      <a href="#menu" class="btn-outline">Voir le menu</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat">
+        <div class="stat-val">100+</div>
+        <div class="stat-lbl">Plats différents</div>
+      </div>
+      <div class="stat" style="padding-left:2rem">
+        <div class="stat-val">30min</div>
+        <div class="stat-lbl">Livraison moyenne</div>
+      </div>
+      <div class="stat" style="padding-left:2rem">
+        <div class="stat-val">5<span class="star">★</span></div>
+        <div class="stat-lbl">Note clients</div>
+      </div>
+    </div>
+  </div>
+  <div class="hero-scroll" onclick="document.getElementById('specialites').scrollIntoView({behavior:'smooth'})">
+    <span>Découvrir</span>
+    <div class="scroll-mouse"></div>
+  </div>
+</section>
+
+<!-- ─── SPÉCIALITÉS ─── -->
+<section id="specialites">
+  <div class="section-center">
+    <div class="badge">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--red)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+      Nos Spécialités
+    </div>
+    <h2 class="sec-title">Les Incontournables</h2>
+    <p class="sec-sub">Découvrez nos plats signature qui font la renommée de notre restaurant</p>
+  </div>
+  <div class="specials-grid">
+    <div class="special-card reveal" data-name="Poulet Moambé" data-price="15.99" data-img="https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=800&q=85">
+      <img src="https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=800&q=85" alt="Poulet Moambé"/>
+      <div class="special-overlay"></div>
+      <div class="special-text">
+        <h3>Poulet Moambé</h3>
+        <p>Notre spécialité signature</p>
+      </div>
+    </div>
+    <div class="special-card reveal" data-name="Liboke de Poisson" data-price="16.99" data-img="https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&q=85">
+      <img src="https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=800&q=85" alt="Liboke de Poisson"/>
+      <div class="special-overlay"></div>
+      <div class="special-text">
+        <h3>Liboke de Poisson</h3>
+        <p>Fraîcheur et tradition</p>
+      </div>
+    </div>
+    <div class="special-card reveal" data-name="Pondu Authentique" data-price="13.99" data-img="https://images.unsplash.com/photo-1512058564366-18510be2db19?w=800&q=85">
+      <img src="https://images.unsplash.com/photo-1512058564366-18510be2db19?w=800&q=85" alt="Pondu Authentique"/>
+      <div class="special-overlay"></div>
+      <div class="special-text">
+        <h3>Pondu Authentique</h3>
+        <p>Recette familiale</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─── MENU ─── -->
+<section id="menu">
+  <div class="section-center">
+    <h2 class="sec-title">Notre Menu</h2>
+    <p class="sec-sub">Des plats authentiques préparés avec des ingrédients frais et des recettes traditionnelles</p>
+  </div>
+  <div class="filter-tabs">
+    <button class="tab active" onclick="filterMenu('tous',this)">Tous</button>
+    <button class="tab" onclick="filterMenu('plats',this)">Plats principaux</button>
+    <button class="tab" onclick="filterMenu('accompagnements',this)">Accompagnements</button>
+  </div>
+  <div class="menu-grid" id="menuGrid">
+
+    <div class="menu-card reveal" data-cat="plats" data-name="Poulet Moambé" data-price="15.99" data-img="https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=600&q=80">
+      <img class="menu-card-img" src="https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?w=600&q=80" alt="Poulet Moambé"/>
+      <div class="menu-card-body">
+        <div class="menu-card-name">Poulet Moambé</div>
+        <div class="menu-card-desc">Poulet mijoté dans une sauce onctueuse aux noix de palme</div>
+        <div class="menu-card-footer">
+          <div class="menu-price">15.99€</div>
+          <button class="btn-add" onclick="addToCart(this)" aria-label="Ajouter">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-card reveal" data-cat="plats" data-name="Pondu" data-price="13.99" data-img="https://images.unsplash.com/photo-1512058564366-18510be2db19?w=600&q=80">
+      <img class="menu-card-img" src="https://images.unsplash.com/photo-1512058564366-18510be2db19?w=600&q=80" alt="Pondu"/>
+      <div class="menu-card-body">
+        <div class="menu-card-name">Pondu</div>
+        <div class="menu-card-desc">Feuilles de manioc pilées avec du poisson fumé</div>
+        <div class="menu-card-footer">
+          <div class="menu-price">13.99€</div>
+          <button class="btn-add" onclick="addToCart(this)" aria-label="Ajouter">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-card reveal" data-cat="plats" data-name="Fufu" data-price="9.99" data-img="https://images.unsplash.com/photo-1574484284002-952d92456975?w=600&q=80">
+      <img class="menu-card-img" src="https://images.unsplash.com/photo-1574484284002-952d92456975?w=600&q=80" alt="Fufu"/>
+      <div class="menu-card-body">
+        <div class="menu-card-name">Fufu</div>
+        <div class="menu-card-desc">Pâte de manioc traditionnelle accompagnée de sauce</div>
+        <div class="menu-card-footer">
+          <div class="menu-price">9.99€</div>
+          <button class="btn-add" onclick="addToCart(this)" aria-label="Ajouter">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-card reveal" data-cat="plats" data-name="Liboke de Poisson" data-price="16.99" data-img="https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600&q=80">
+      <img class="menu-card-img" src="https://images.unsplash.com/photo-1565557623262-b51c2513a641?w=600&q=80" alt="Liboke de Poisson"/>
+      <div class="menu-card-body">
+        <div class="menu-card-name">Liboke de Poisson</div>
+        <div class="menu-card-desc">Poisson mariné cuit dans des feuilles de bananier</div>
+        <div class="menu-card-footer">
+          <div class="menu-price">16.99€</div>
+          <button class="btn-add" onclick="addToCart(this)" aria-label="Ajouter">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-card reveal" data-cat="plats" data-name="Jollof Rice" data-price="11.99" data-img="https://images.unsplash.com/photo-1598511757337-fe2cafc31ba0?w=600&q=80">
+      <img class="menu-card-img" src="https://images.unsplash.com/photo-1598511757337-fe2cafc31ba0?w=600&q=80" alt="Jollof Rice"/>
+      <div class="menu-card-body">
+        <div class="menu-card-name">Jollof Rice</div>
+        <div class="menu-card-desc">Riz parfumé aux épices et tomates</div>
+        <div class="menu-card-footer">
+          <div class="menu-price">11.99€</div>
+          <button class="btn-add" onclick="addToCart(this)" aria-label="Ajouter">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-card reveal" data-cat="accompagnements" data-name="Madesu" data-price="10.99" data-img="https://images.unsplash.com/photo-1547592180-85f173990554?w=600&q=80">
+      <img class="menu-card-img" src="https://images.unsplash.com/photo-1547592180-85f173990554?w=600&q=80" alt="Madesu"/>
+      <div class="menu-card-body">
+        <div class="menu-card-name">Madesu</div>
+        <div class="menu-card-desc">Haricots rouges mijotés à la sauce tomate</div>
+        <div class="menu-card-footer">
+          <div class="menu-price">10.99€</div>
+          <button class="btn-add" onclick="addToCart(this)" aria-label="Ajouter">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-card reveal" data-cat="accompagnements" data-name="Plantain Frit" data-price="6.99" data-img="https://images.unsplash.com/photo-1528137871618-79d2761e3fd5?w=600&q=80">
+      <img class="menu-card-img" src="https://images.unsplash.com/photo-1528137871618-79d2761e3fd5?w=600&q=80" alt="Plantain Frit"/>
+      <div class="menu-card-body">
+        <div class="menu-card-name">Plantain Frit</div>
+        <div class="menu-card-desc">Bananes plantains dorées et croustillantes</div>
+        <div class="menu-card-footer">
+          <div class="menu-price">6.99€</div>
+          <button class="btn-add" onclick="addToCart(this)" aria-label="Ajouter">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu-card reveal" data-cat="accompagnements" data-name="Saka Saka" data-price="14.99" data-img="https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&q=80">
+      <img class="menu-card-img" src="https://images.unsplash.com/photo-1600891964092-4316c288032e?w=600&q=80" alt="Saka Saka"/>
+      <div class="menu-card-body">
+        <div class="menu-card-name">Saka Saka</div>
+        <div class="menu-card-desc">Feuilles de manioc en sauce crémeuse</div>
+        <div class="menu-card-footer">
+          <div class="menu-price">14.99€</div>
+          <button class="btn-add" onclick="addToCart(this)" aria-label="Ajouter">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ─── À PROPOS ─── -->
+<section id="apropos">
+  <div class="about-img-wrap reveal">
+    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=900&q=85" alt="Cuisine congolaise"/>
+    <div class="about-badge">
+      <div class="about-badge-num">15+</div>
+      <div class="about-badge-lbl">Années d'expérience</div>
+    </div>
+  </div>
+  <div class="about-content reveal">
+    <h2 class="sec-title">L'Authenticité Congolaise<br>à Votre Table</h2>
+    <p class="sec-sub" style="margin-bottom:2rem">Saveurs du Congo est né de la passion de partager la richesse culinaire de l'Afrique. Chaque plat raconte une histoire, celle de nos racines, de notre culture, et de notre amour pour la bonne cuisine.</p>
+    <div class="about-features">
+      <div class="feat-row">
+        <div class="feat-icon">
+          <!-- chef hat icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>
+        </div>
+        <div class="feat-text">
+          <strong>Recettes Authentiques</strong>
+          <span>Des plats préparés selon les traditions culinaires congolaises transmises de génération en génération.</span>
+        </div>
+      </div>
+      <div class="feat-row">
+        <div class="feat-icon">
+          <!-- heart icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+        </div>
+        <div class="feat-text">
+          <strong>Ingrédients Frais</strong>
+          <span>Nous sélectionnons avec soin les meilleurs ingrédients pour garantir qualité et saveurs authentiques.</span>
+        </div>
+      </div>
+      <div class="feat-row">
+        <div class="feat-icon">
+          <!-- award icon -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+        </div>
+        <div class="feat-text">
+          <strong>Excellence Reconnue</strong>
+          <span>Notre engagement envers la qualité nous a valu la confiance de milliers de clients satisfaits.</span>
+        </div>
+      </div>
+    </div>
+    <a href="#menu" class="btn-primary" style="display:inline-flex">
+      Découvrir notre menu
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+    </a>
+  </div>
+</section>
+
+<!-- ─── LIVRAISON ─── -->
+<section id="livraison">
+  <div class="section-center">
+    <h2 class="sec-title">Livraison &amp; Commande</h2>
+    <p class="sec-sub">Recevez vos plats préférés directement chez vous, chauds et savoureux</p>
+  </div>
+  <div class="delivery-grid">
+
+    <div class="delivery-card reveal">
+      <div class="delivery-icon">
+        <!-- clock svg -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      </div>
+      <strong>Livraison Rapide</strong>
+      <span>30 minutes en moyenne</span>
+    </div>
+
+    <div class="delivery-card reveal">
+      <div class="delivery-icon">
+        <!-- map-pin svg -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      </div>
+      <strong>Zone de Livraison</strong>
+      <span>Paris et proche banlieue</span>
+    </div>
+
+    <div class="delivery-card reveal">
+      <div class="delivery-icon">
+        <!-- truck svg -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+      </div>
+      <strong>Frais de Livraison</strong>
+      <span>À partir de 3.99€</span>
+    </div>
+
+    <div class="delivery-card reveal">
+      <div class="delivery-icon">
+        <!-- phone svg -->
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.08 6.08l1.17-.97a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+      </div>
+      <strong>Commande par Téléphone</strong>
+      <span>+33 1 XX XX XX XX</span>
+    </div>
+
+  </div>
+
+  <div class="promo-banner reveal">
+    <h2>Première Commande&nbsp;?</h2>
+    <p>Profitez de 20% de réduction sur votre première commande avec le code <strong>BIENVENUE20</strong></p>
+    <button class="btn-white" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">Commander Maintenant</button>
+  </div>
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer id="contact">
+  <div class="footer-grid">
+    <div>
+      <div class="footer-logo">Saveurs du Congo</div>
+      <p class="footer-desc">La meilleure cuisine africaine et congolaise, livrée directement chez vous. Authenticité, qualité et saveurs garanties.</p>
+      <div class="social-row">
+        <button class="social-btn" title="Facebook">
+          <svg viewBox="0 0 24 24" fill="white"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </button>
+        <button class="social-btn" title="Instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </button>
+      </div>
+    </div>
+    <div class="footer-col">
+      <h4>Navigation</h4>
+      <ul class="footer-links">
+        <li><a href="#accueil">Accueil</a></li>
+        <li><a href="#menu">Menu</a></li>
+        <li><a href="#apropos">À propos</a></li>
+        <li><a href="#livraison">Livraison</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Contact</h4>
+      <div class="contact-rows">
+        <div class="contact-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <span>123 Rue de la République, 75001 Paris</span>
+        </div>
+        <div class="contact-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.08 6.08l1.17-.97a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <span>+33 1 XX XX XX XX</span>
+        </div>
+        <div class="contact-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <span>contact@saveurscongo.fr</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">© 2026 Saveurs du Congo. Tous droits réservés.</div>
+</footer>
+
+<script>
+// CART STATE 
+let cart = [];
+
+function addToCart(btn) {
+  const card = btn.closest('[data-name]');
+  const name  = card.dataset.name;
+  const price = parseFloat(card.dataset.price);
+  const img   = card.dataset.img || card.querySelector('img')?.src || '';
+  const existing = cart.find(i => i.name === name);
+  if (existing) existing.qty++;
+  else cart.push({ name, price, img, qty: 1 });
+  renderCart();
+  showToast('✓ ' + name + ' ajouté au panier');
+  btn.style.transform = 'scale(1.35)';
+  setTimeout(() => (btn.style.transform = ''), 200);
+}
+
+function changeQty(idx, d) {
+  cart[idx].qty += d;
+  if (cart[idx].qty <= 0) cart.splice(idx, 1);
+  renderCart();
+}
+
+function renderCart() {
+  const body    = document.getElementById('cartBody');
+  const empty   = document.getElementById('cartEmpty');
+  const foot    = document.getElementById('cartFoot');
+  const badge   = document.getElementById('cartBadge');
+  const totalEl = document.getElementById('cartTotal');
+
+  const total = cart.reduce((s,i) => s + i.price * i.qty, 0);
+  const count = cart.reduce((s,i) => s + i.qty, 0);
+
+  badge.textContent = count;
+  badge.style.display = count > 0 ? 'flex' : 'none';
+  empty.style.display = cart.length === 0 ? 'block' : 'none';
+  foot.style.display  = cart.length > 0  ? 'block' : 'none';
+  totalEl.textContent = total.toFixed(2) + '€';
+
+  body.querySelectorAll('.cart-item').forEach(el => el.remove());
+  cart.forEach((item, idx) => {
+    const div = document.createElement('div');
+    div.className = 'cart-item';
+    div.innerHTML = `
+      <img src="${item.img}" alt="${item.name}"/>
+      <div class="ci-info">
+        <div class="ci-name">${item.name}</div>
+        <div class="ci-price">${(item.price * item.qty).toFixed(2)}€</div>
+      </div>
+      <div class="ci-qty">
+        <button onclick="changeQty(${idx},-1)">−</button>
+        <span>${item.qty}</span>
+        <button onclick="changeQty(${idx},1)">+</button>
+      </div>`;
+    body.appendChild(div);
+  });
+}
+
+function openCart()  {
+  document.getElementById('cartDrawer').classList.add('open');
+  document.getElementById('overlay').classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function closeCart() {
+  document.getElementById('cartDrawer').classList.remove('open');
+  document.getElementById('overlay').classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+// MENU FILTER
+function filterMenu(cat, btn) {
+  document.querySelectorAll('.filter-tabs .tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#menuGrid .menu-card').forEach(card => {
+    const show = cat === 'tous' || card.dataset.cat === cat;
+    card.style.display = show ? '' : 'none';
+  });
+}
+
+// TOAST
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2400);
+}
+
+// SCROLL REVEAL 
+const revealObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.1 });
+document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+// stagger cards
+document.querySelectorAll('.menu-grid .menu-card, .specials-grid .special-card, .delivery-grid .delivery-card').forEach((el, i) => {
+  el.style.transitionDelay = (i % 4) * 80 + 'ms';
+});
+</script>
+</body>
+</html>
