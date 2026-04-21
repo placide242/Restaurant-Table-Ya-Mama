@@ -3,7 +3,8 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Table Ya Mama</title>
+<title>Table Ya Mama - Cuisine Congolaise à Pointe-Noire</title>
+<meta name="description" content="Authentique cuisine congolaise et africaine à Pointe-Noire. Commandez en ligne, livraison rapide via WhatsApp."/>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="styles.css"/>
 </head>
@@ -11,33 +12,90 @@
 
 <!-- OVERLAY & CART DRAWER -->
 <div class="overlay" id="overlay" onclick="closeCart()"></div>
-<div class="cart-drawer" id="cartDrawer">
+<div class="cart-drawer" id="cartDrawer" role="dialog" aria-label="Panier de commande" aria-modal="true">
   <div class="cart-head">
     <h3>
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:20px;height:20px;color:var(--red)"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
       Mon Panier
     </h3>
-    <button class="cart-close" onclick="closeCart()">
+    <button class="cart-close" onclick="closeCart()" aria-label="Fermer le panier">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
   </div>
+
   <div class="cart-body" id="cartBody">
     <div class="cart-empty" id="cartEmpty">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
       Votre panier est vide.
     </div>
   </div>
+
   <div class="cart-foot" id="cartFoot" style="display:none">
-    <div class="cart-total-row">
-      <strong>Total</strong>
-      <span id="cartTotal">0.00FCFA</span>
+    <!-- PROMO CODE -->
+    <div class="promo-row" id="promoRow">
+      <input
+        type="text"
+        id="promoInput"
+        placeholder="Code promo (ex: BIENVENUE20)"
+        aria-label="Code promo"
+        oninput="this.value = this.value.toUpperCase()"
+      />
+      <button type="button" class="btn-promo" onclick="applyPromo()">Appliquer</button>
     </div>
-    <button class="btn-checkout">Commander →</button>
+    <div class="promo-applied" id="promoApplied" style="display:none">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+      Code BIENVENUE20 - 20% de réduction appliqué
+    </div>
+
+    <div class="cart-total-row">
+      <span class="total-label">Sous-total</span>
+      <span id="cartSubtotal"></span>
+    </div>
+    <div class="cart-discount-row" id="cartDiscountRow" style="display:none">
+      <span class="total-label discount-label">Réduction (-20%)</span>
+      <span id="cartDiscount" class="discount-val"></span>
+    </div>
+    <div class="cart-total-row cart-total-final">
+      <strong>Total</strong>
+      <span id="cartTotal">0 FCFA</span>
+    </div>
+
+    <!-- BOUTON VIDER LE PANIER -->
+    <button type="button" class="btn-clear-cart" onclick="clearCart()" aria-label="Vider le panier">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="16" height="16" aria-hidden="true">
+        <path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/>
+      </svg>
+      Vider le panier
+    </button>
+
+    <!-- CHECKOUT VIA WHATSAPP -->
+    <button type="button" class="btn-checkout" onclick="checkoutWhatsApp()">
+      <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+      Commander via WhatsApp
+    </button>
+    <p class="checkout-note">Votre commande sera envoyée directement sur WhatsApp</p>
   </div>
 </div>
 
-<!--  TOAST  -->
-<div class="toast" id="toast"></div>
+<!-- TOAST -->
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<!-- WHATSAPP FLOATING BUTTON -->
+<a
+  href="https://wa.me/242067890123?text=Bonjour%20Table%20Ya%20Mama%2C%20je%20voudrais%20passer%20une%20commande%20%F0%9F%8D%BD%EF%B8%8F"
+  class="wa-float"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Commander sur WhatsApp"
+  title="Commander sur WhatsApp"
+>
+  <svg viewBox="0 0 24 24" fill="white" width="28" height="28" aria-hidden="true">
+    <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+  </svg>
+  <span class="wa-float-label">Commander</span>
+</a>
 
 <header>
   <nav aria-label="Navigation principale">
@@ -49,13 +107,17 @@
       <li><a href="#livraison">Livraison</a></li>
       <li><a href="#contact">Contact</a></li>
     </ul>
-    <button type="button" class="btn-cart" onclick="openCart()">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-      Panier
-      <span class="cart-badge" id="cartBadge">0</span>
-    </button>
-    <button type="button" class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Menu mobile">
-      <svg class="hamburger" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <div class="nav-right">
+      <!-- INDICATEUR OUVERT / FERMÉ -->
+      <div class="status-indicator" id="restaurantStatus" aria-live="polite"></div>
+      <button type="button" class="btn-cart" onclick="openCart()" aria-label="Ouvrir le panier">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        Panier
+        <span class="cart-badge" id="cartBadge" aria-label="articles dans le panier">0</span>
+      </button>
+    </div>
+    <button type="button" class="mobile-menu-btn" onclick="toggleMobileMenu()" aria-label="Ouvrir le menu de navigation" aria-expanded="false">
+      <svg class="hamburger" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <line x1="3" y1="12" x2="21" y2="12"/>
         <line x1="3" y1="6" x2="21" y2="6"/>
         <line x1="3" y1="18" x2="21" y2="18"/>
@@ -63,22 +125,22 @@
     </button>
   </nav>
 
-  <section class="hero" id="accueil">
-    <div class="hero-bg"></div>
+  <section class="hero" id="accueil" aria-label="Accueil">
+    <div class="hero-bg" role="img" aria-label="Plats de cuisine congolaise"></div>
     <div class="hero-content">
       <h1>Table Ya<br>Mama</h1>
-      <p>Découvrez l'authenticité de la cuisine congolaise et africaine, préparée avec passion et livrée chez vous.</p>
+      <p>Découvrez l'authenticité de la cuisine congolaise et africaine, préparée avec passion et livrée chez vous à Pointe-Noire.</p>
       <div class="hero-btns">
         <a href="#menu" class="btn-primary">
           Commander maintenant
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
         </a>
         <a href="#menu" class="btn-outline">Voir le menu</a>
       </div>
       <div class="hero-stats">
         <div class="stat">
-          <div class="stat-val">100+</div>
-          <div class="stat-lbl">Plats différents</div>
+          <div class="stat-val">15+</div>
+          <div class="stat-lbl">Ans d'expérience</div>
         </div>
         <div class="stat" style="padding-left:2rem">
           <div class="stat-val">20min</div>
@@ -90,9 +152,9 @@
         </div>
       </div>
     </div>
-    <div class="hero-scroll" role="button" tabindex="0" onclick="document.getElementById('specialites').scrollIntoView({behavior:'smooth'})">
+    <div class="hero-scroll" role="button" tabindex="0" onclick="document.getElementById('specialites').scrollIntoView({behavior:'smooth'})" onkeydown="if(event.key==='Enter')document.getElementById('specialites').scrollIntoView({behavior:'smooth'})">
       <span>Découvrir</span>
-      <div class="scroll-mouse"></div>
+      <div class="scroll-mouse" aria-hidden="true"></div>
     </div>
   </section>
 </header>
@@ -102,37 +164,37 @@
   <section id="specialites" aria-labelledby="specialites-title">
     <div class="section-center">
       <div class="badge">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--red)" stroke="none"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--red)" stroke="none" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
         Nos Spécialités
       </div>
       <h2 id="specialites-title" class="sec-title">Les Incontournables</h2>
       <p class="sec-sub">Découvrez nos plats signature qui font la renommée de notre restaurant</p>
     </div>
-    <ul class="specials-grid">
-      <li class="special-card reveal" data-name="Poulet Moamba" data-price="15.99" data-img="images/Poulet Moambé.jfif">
+    <ul class="specials-grid" style="list-style:none;padding:0">
+      <li class="special-card reveal" data-name="Poulet Moamba" data-price="10500" data-img="assets/Poulet-Moambé.jfif">
         <figure>
-          <img src="images/Poulet Moambé.jfif" alt="Poulet Moamba"/>
-          <div class="special-overlay"></div>
+          <img src="assets/Poulet-Moambé.jfif" alt="Poulet Moamba - spécialité congolaise" loading="lazy"/>
+          <div class="special-overlay" aria-hidden="true"></div>
           <figcaption class="special-text">
             <h3>Poulet Moamba</h3>
             <p>Notre spécialité signature</p>
           </figcaption>
         </figure>
       </li>
-      <li class="special-card reveal" data-name="Liboke de Poisson" data-price="16.99" data-img="images/Liboke de Poisson.jfif">
+      <li class="special-card reveal" data-name="Liboke de Poisson" data-price="11500" data-img="assets/Liboke-de-poisson.jfif">
         <figure>
-          <img src="images/Liboke de Poisson.jfif" alt="Liboke de Poisson"/>
-          <div class="special-overlay"></div>
+          <img src="assets/Liboke-de-poisson.jfif" alt="Liboke de Poisson - poisson en feuilles de bananier" loading="lazy"/>
+          <div class="special-overlay" aria-hidden="true"></div>
           <figcaption class="special-text">
             <h3>Liboke de Poisson</h3>
             <p>Fraîcheur et tradition</p>
           </figcaption>
         </figure>
       </li>
-      <li class="special-card reveal" data-name="Pondu Authentique" data-price="13.99" data-img="images/Pondu Authentique.jfif">
+      <li class="special-card reveal" data-name="Pondu Authentique" data-price="9500" data-img="assets/Pondu-Authentique.jfif">
         <figure>
-          <img src="images/Pondu Authentique.jfif" alt="Pondu Authentique"/>
-          <div class="special-overlay"></div>
+          <img src="assets/Pondu-Authentique.jfif" alt="Pondu Authentique - feuilles de manioc pilées" loading="lazy"/>
+          <div class="special-overlay" aria-hidden="true"></div>
           <figcaption class="special-text">
             <h3>Pondu Authentique</h3>
             <p>Recette familiale</p>
@@ -142,237 +204,276 @@
     </ul>
   </section>
 
-<!-- MENU -->
-<section id="menu" aria-labelledby="menu-title">
-  <div class="section-center">
-    <h2 id="menu-title" class="sec-title">Notre Menu</h2>
-    <p class="sec-sub">Des plats authentiques préparés avec des ingrédients frais et des recettes traditionnelles</p>
-  </div>
-  <div class="filter-tabs" role="tablist">
-    <button type="button" class="tab active" onclick="filterMenu('tous',this)">Tous</button>
-    <button type="button" class="tab" onclick="filterMenu('plats',this)">Plats principaux</button>
-    <button type="button" class="tab" onclick="filterMenu('accompagnements',this)">Accompagnements</button>
-  </div>
-  <div class="menu-grid" id="menuGrid">
-
-    <article class="menu-card reveal" data-cat="plats" data-name="Poulet Moamba" data-price="10500" data-img="images/Poulet Moambé.jfif">
-      <img class="menu-card-img" src="images/Poulet Moambé.jfif" alt="Poulet Moamba"/>
-      <div class="menu-card-body">
-        <h3 class="menu-card-name">Poulet Moamba</h3>
-        <p class="menu-card-desc">Poulet mijoté dans une sauce onctueuse aux noix de palme</p>
-        <div class="menu-card-footer">
-          <div class="menu-price">10500FCFA</div>
-          <button type="button" class="btn-add" onclick="addToCart(this)" aria-label="Ajouter Poulet Moamba au panier">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-        </div>
-      </div>
-    </article>
-
-    <article class="menu-card reveal" data-cat="plats" data-name="Pondu" data-price="9500" data-img="images/Pondu Authentique.jfif">
-      <img class="menu-card-img" src="images/Pondu Authentique.jfif" alt="Pondu"/>
-      <div class="menu-card-body">
-        <h3 class="menu-card-name">Pondu</h3>
-        <p class="menu-card-desc">Feuilles de manioc pilées avec du poisson fumé</p>
-        <div class="menu-card-footer">
-          <div class="menu-price">9500FCFA</div>
-          <button type="button" class="btn-add" onclick="addToCart(this)" aria-label="Ajouter Pondu au panier">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-        </div>
-      </div>
-    </article>
-
-    <article class="menu-card reveal" data-cat="plats" data-name="Attiéké Poisson" data-price="6500" data-img="images/Attiéké Poisson.jfif">
-      <img class="menu-card-img" src="images/Attiéké Poisson.jfif" alt="Attiéké Poisson"/>
-      <div class="menu-card-body">
-        <h3 class="menu-card-name">Attiéké Poisson</h3>
-        <p class="menu-card-desc">Spécialité Ivoirienne : Attiéké frais servi avec poisson grillé et sauce savoureuse</p>
-        <div class="menu-card-footer">
-          <div class="menu-price">6500FCFA</div>
-          <button type="button" class="btn-add" onclick="addToCart(this)" aria-label="Ajouter Attiéké Poisson au panier">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-        </div>
-      </div>
-    </article>
-
-    <article class="menu-card reveal" data-cat="plats" data-name="Liboke de Poisson" data-price="11500" data-img="images/Liboke de Poisson.jfif">
-      <img class="menu-card-img" src="images/Liboke de Poisson.jfif" alt="Liboke de Poisson"/>
-      <div class="menu-card-body">
-        <h3 class="menu-card-name">Liboke de Poisson</h3>
-        <p class="menu-card-desc">Poisson mariné cuit dans des feuilles de bananier</p>
-        <div class="menu-card-footer">
-          <div class="menu-price">11500FCFA</div>
-          <button type="button" class="btn-add" onclick="addToCart(this)" aria-label="Ajouter Liboke de Poisson au panier">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-        </div>
-      </div>
-    </article>
-
-    <article class="menu-card reveal" data-cat="plats" data-name="Riz Parfumé" data-price="19500" data-img="images/RIZ.jfif">
-      <img class="menu-card-img" src="images/RIZ.jfif" alt="Riz Parfumé"/>
-      <div class="menu-card-body">
-        <h3 class="menu-card-name">Riz Parfumé</h3>
-        <p class="menu-card-desc">Riz parfumé aux épices et tomates</p>
-        <div class="menu-card-footer">
-          <div class="menu-price">19500FCFA</div>
-          <button type="button" class="btn-add" onclick="addToCart(this)" aria-label="Ajouter Riz Parfumé au panier">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-        </div>
-      </div>
-    </article>
-
-    <article class="menu-card reveal" data-cat="accompagnements" data-name="Madesu" data-price="13500" data-img="images/Madesu.jfif">
-      <img class="menu-card-img" src="images/Madesu.jfif" alt="Madesu"/>
-      <div class="menu-card-body">
-        <h3 class="menu-card-name">Madesu</h3>
-        <p class="menu-card-desc">Haricots rouges mijotés à la sauce tomate</p>
-        <div class="menu-card-footer">
-          <div class="menu-price">13500FCFA</div>
-          <button type="button" class="btn-add" onclick="addToCart(this)" aria-label="Ajouter Madesu au panier">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-        </div>
-      </div>
-    </article>
-
-    <article class="menu-card reveal" data-cat="accompagnements" data-name="Plantain Frit" data-price="5500" data-img="images/Plantain Frit.jfif">
-      <img class="menu-card-img" src="images/Plantain Frit.jfif" alt="Plantain Frit"/>
-      <div class="menu-card-body">
-        <h3 class="menu-card-name">Plantain Frit</h3>
-        <p class="menu-card-desc">Bananes plantains dorées et croustillantes</p>
-        <div class="menu-card-footer">
-          <div class="menu-price">5500FCFA</div>
-          <button type="button" class="btn-add" onclick="addToCart(this)" aria-label="Ajouter Plantain Frit au panier">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-        </div>
-      </div>
-    </article>
-
-    <article class="menu-card reveal" data-cat="accompagnements" data-name="Saka Madesu" data-price="20500" data-img="images/Saka Madesu.jfif">
-      <img class="menu-card-img" src="images/Saka Madesu.jfif" alt="Saka Madesu"/>
-      <div class="menu-card-body">
-        <h3 class="menu-card-name">Saka Madesu</h3>
-        <p class="menu-card-desc">Feuilles de manioc en sauce crémeuse avec haricot rouge</p>
-        <div class="menu-card-footer">
-          <div class="menu-price">20500FCFA</div>
-          <button type="button" class="btn-add" onclick="addToCart(this)" aria-label="Ajouter Saka Madesu au panier">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          </button>
-        </div>
-      </div>
-    </article>
-
-  </div>
-</section>
-
-<!-- À PROPOS -->
-<section id="apropos" aria-labelledby="apropos-title">
-  <div class="about-img-wrap reveal">
-    <img src="images/recette.jpg" alt="Cuisine congolaise"/>
-    <div class="about-badge">
-      <div class="about-badge-num">15+</div>
-      <div class="about-badge-lbl">Années d'expérience</div>
+  <!-- MENU -->
+  <section id="menu" aria-labelledby="menu-title">
+    <div class="section-center">
+      <h2 id="menu-title" class="sec-title">Notre Menu</h2>
+      <p class="sec-sub">Des plats authentiques préparés avec des ingrédients frais et des recettes traditionnelles</p>
     </div>
-  </div>
-  <div class="about-content reveal">
-    <h2 id="apropos-title" class="sec-title">L'Authenticité Congolaise<br>à Votre Table</h2>
-    <p class="sec-sub" style="margin-bottom:2rem">Saveurs du Congo est né de la passion de partager la richesse culinaire de l'Afrique. Chaque plat raconte une histoire, celle de nos racines, de notre culture, et de notre amour pour la bonne cuisine.</p>
-    <ul class="about-features">
-      <li class="feat-row">
-        <div class="feat-icon">
-          <!-- chef hat icon -->
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>
+    <div class="filter-tabs" role="tablist" aria-label="Filtrer les plats">
+      <button type="button" class="tab active" role="tab" aria-selected="true" onclick="filterMenu('tous',this)">Tous</button>
+      <button type="button" class="tab" role="tab" aria-selected="false" onclick="filterMenu('plats',this)">Plats principaux</button>
+      <button type="button" class="tab" role="tab" aria-selected="false" onclick="filterMenu('accompagnements',this)">Accompagnements</button>
+    </div>
+    <div class="menu-grid" id="menuGrid">
+
+      <article class="menu-card reveal" data-cat="plats" data-name="Poulet Moamba" data-price="10500" data-img="assets/Poulet-Moambé.jfif">
+        <img class="menu-card-img" src="assets/Poulet-Moambé.jfif" alt="Poulet Moamba" loading="lazy"/>
+        <div class="menu-card-body">
+          <h3 class="menu-card-name">Poulet Moamba</h3>
+          <p class="menu-card-desc">Poulet mijoté dans une sauce onctueuse aux noix de palme</p>
+          <div class="menu-card-footer">
+            <div class="menu-price">10 500 FCFA</div>
+            <button type="button" class="btn-add" onclick="addToCart(this)" aria-label="Ajouter Poulet Moamba au panier">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
         </div>
-        <div class="feat-text">
-          <strong>Recettes Authentiques</strong>
-          <span>Des plats préparés selon les traditions culinaires congolaises transmises de génération en génération.</span>
+      </article>
+
+      <article class="menu-card reveal" data-cat="plats" data-name="Pondu" data-price="9500" data-img="assets/Pondu-Authentique.jfif">
+        <img class="menu-card-img" src="assets/Pondu-Authentique.jfif" alt="Pondu" loading="lazy"/>
+        <div class="menu-card-body">
+          <h3 class="menu-card-name">Pondu</h3>
+          <p class="menu-card-desc">Feuilles de manioc pilées avec du poisson fumé</p>
+          <div class="menu-card-footer">
+            <div class="menu-price">9 500 FCFA</div>
+            <button type="button" class="btn-add" onclick="addToCart(this)" aria-label="Ajouter Pondu au panier">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
         </div>
+      </article>
+
+      <article class="menu-card reveal" data-cat="plats" data-name="Attiéké Poisson" data-price="6500" data-img="assets/Attiéké-Poisson.jfif">
+        <img class="menu-card-img" src="assets/Attiéké-Poisson.jfif" alt="Attiéké Poisson" loading="lazy"/>
+        <div class="menu-card-body">
+          <h3 class="menu-card-name">Attiéké Poisson</h3>
+          <p class="menu-card-desc">Spécialité ivoirienne : attiéké frais servi avec poisson grillé et sauce savoureuse</p>
+          <div class="menu-card-footer">
+            <div class="menu-price">6 500 FCFA</div>
+            <button type="button" class="btn-add" onclick="addToCart(this)" aria-label="Ajouter Attiéké Poisson au panier">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="menu-card reveal" data-cat="plats" data-name="Liboke de Poisson" data-price="11500" data-img="assets/Liboke-de-poisson.jfif">
+        <img class="menu-card-img" src="assets/Liboke-de-poisson.jfif" alt="Liboke de Poisson" loading="lazy"/>
+        <div class="menu-card-body">
+          <h3 class="menu-card-name">Liboke de Poisson</h3>
+          <p class="menu-card-desc">Poisson mariné cuit dans des feuilles de bananier</p>
+          <div class="menu-card-footer">
+            <div class="menu-price">11 500 FCFA</div>
+            <button type="button" class="btn-add" onclick="addToCart(this)" aria-label="Ajouter Liboke de Poisson au panier">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="menu-card reveal" data-cat="plats" data-name="Riz Parfumé" data-price="7500" data-img="assets/RIZ.jfif">
+        <img class="menu-card-img" src="assets/RIZ.jfif" alt="Riz Parfumé" loading="lazy"/>
+        <div class="menu-card-body">
+          <h3 class="menu-card-name">Riz Parfumé</h3>
+          <p class="menu-card-desc">Riz parfumé aux épices et tomates</p>
+          <div class="menu-card-footer">
+            <div class="menu-price">7 500 FCFA</div>
+            <button type="button" class="btn-add" onclick="addToCart(this)" aria-label="Ajouter Riz Parfumé au panier">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="menu-card reveal" data-cat="accompagnements" data-name="Madesu" data-price="5500" data-img="assets/Madesu.jfif">
+        <img class="menu-card-img" src="assets/Madesu.jfif" alt="Madesu" loading="lazy"/>
+        <div class="menu-card-body">
+          <h3 class="menu-card-name">Madesu</h3>
+          <p class="menu-card-desc">Haricots rouges mijotés à la sauce tomate</p>
+          <div class="menu-card-footer">
+            <div class="menu-price">5 500 FCFA</div>
+            <button type="button" class="btn-add" onclick="addToCart(this)" aria-label="Ajouter Madesu au panier">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="menu-card reveal" data-cat="accompagnements" data-name="Plantain Frit" data-price="3500" data-img="assets/Plantain-Frit.jfif">
+        <img class="menu-card-img" src="assets/Plantain-Frit.jfif" alt="Plantain Frit" loading="lazy"/>
+        <div class="menu-card-body">
+          <h3 class="menu-card-name">Plantain Frit</h3>
+          <p class="menu-card-desc">Bananes plantains dorées et croustillantes</p>
+          <div class="menu-card-footer">
+            <div class="menu-price">3 500 FCFA</div>
+            <button type="button" class="btn-add" onclick="addToCart(this)" aria-label="Ajouter Plantain Frit au panier">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
+      </article>
+
+      <article class="menu-card reveal" data-cat="accompagnements" data-name="Saka Madesu" data-price="6500" data-img="assets/Saka-Madesu.jfif">
+        <img class="menu-card-img" src="assets/Saka-Madesu.jfif" alt="Saka Madesu" loading="lazy"/>
+        <div class="menu-card-body">
+          <h3 class="menu-card-name">Saka Madesu</h3>
+          <p class="menu-card-desc">Feuilles de manioc en sauce crémeuse avec haricots rouges</p>
+          <div class="menu-card-footer">
+            <div class="menu-price">6 500 FCFA</div>
+            <button type="button" class="btn-add" onclick="addToCart(this)" aria-label="Ajouter Saka Madesu au panier">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            </button>
+          </div>
+        </div>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- À PROPOS — CORRIGÉ : "Saveurs du Congo" → "Table Ya Mama" -->
+  <section id="apropos" aria-labelledby="apropos-title">
+    <div class="about-img-wrap reveal">
+      <img src="assets/recette.jpg" alt="Cuisine congolaise — Table Ya Mama" loading="lazy"/>
+      <div class="about-badge">
+        <div class="about-badge-num">15+</div>
+        <div class="about-badge-lbl">Années d'expérience</div>
+      </div>
+    </div>
+    <div class="about-content reveal">
+      <h2 id="apropos-title" class="sec-title">L'Authenticité Congolaise<br>à Votre Table</h2>
+      <p class="sec-sub" style="margin-bottom:2rem">Table Ya Mama est née de la passion de partager la richesse culinaire de l'Afrique centrale. Chaque plat raconte une histoire — celle de nos racines, de notre culture, et de notre amour pour la bonne cuisine.</p>
+      <ul class="about-features" style="list-style:none;padding:0">
+        <li class="feat-row">
+          <div class="feat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.87A4 4 0 0 1 7.41 6a5.11 5.11 0 0 1 1.05-1.54 5 5 0 0 1 7.08 0A5.11 5.11 0 0 1 16.59 6 4 4 0 0 1 18 13.87V21H6Z"/><line x1="6" y1="17" x2="18" y2="17"/></svg>
+          </div>
+          <div class="feat-text">
+            <strong>Recettes Authentiques</strong>
+            <span>Des plats préparés selon les traditions culinaires congolaises transmises de génération en génération.</span>
+          </div>
+        </li>
+        <li class="feat-row">
+          <div class="feat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          </div>
+          <div class="feat-text">
+            <strong>Ingrédients Frais</strong>
+            <span>Nous sélectionnons avec soin les meilleurs ingrédients locaux pour garantir qualité et saveurs authentiques.</span>
+          </div>
+        </li>
+        <li class="feat-row">
+          <div class="feat-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+          </div>
+          <div class="feat-text">
+            <strong>Excellence Reconnue</strong>
+            <span>Notre engagement envers la qualité nous a valu la confiance de milliers de clients satisfaits à Pointe-Noire.</span>
+          </div>
+        </li>
+      </ul>
+      <a href="#menu" class="btn-primary" style="display:inline-flex">
+        Découvrir notre menu
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- TÉMOIGNAGES -->
+  <section id="temoignages" aria-labelledby="temoignages-title">
+    <div class="section-center">
+      <div class="badge">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="var(--red)" stroke="none" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+        Avis clients
+      </div>
+      <h2 id="temoignages-title" class="sec-title">Ce que disent nos clients</h2>
+      <p class="sec-sub">La confiance de nos clients est notre plus grande fierté</p>
+    </div>
+    <div class="reviews-grid">
+      <article class="review-card reveal">
+        <div class="review-stars" aria-label="5 étoiles sur 5">★★★★★</div>
+        <p class="review-text">Le meilleur Pondu de Pointe-Noire ! Ça me rappelle la cuisine de ma maman. Livraison rapide et plat encore chaud à l'arrivée.</p>
+        <div class="review-author">
+          <div class="review-avatar" aria-hidden="true">MN</div>
+          <div>
+            <div class="review-name">Marie-Claire N.</div>
+            <div class="review-date">Pointe-Noire · Janvier 2026</div>
+          </div>
+        </div>
+      </article>
+      <article class="review-card reveal">
+        <div class="review-stars" aria-label="4 étoiles sur 5">★★★★</div>
+        <p class="review-text">Le Liboke de Poisson était divin, exactement comme en famille. Je commande ici chaque semaine maintenant. Service impeccable sur WhatsApp !</p>
+        <div class="review-author">
+          <div class="review-avatar" aria-hidden="true">JB</div>
+          <div>
+            <div class="review-name">Jean-Baptiste K.</div>
+            <div class="review-date">Pointe-Noire · Février 2026</div>
+          </div>
+        </div>
+      </article>
+      <article class="review-card reveal">
+        <div class="review-stars" aria-label="5 étoiles sur 5">★★★★★</div>
+        <p class="review-text">Poulet Moamba exceptionnel ! La sauce est onctueuse et parfumée. Livré en moins de 25 minutes. Je recommande vivement à toute la famille.</p>
+        <div class="review-author">
+          <div class="review-avatar" aria-hidden="true">AG</div>
+          <div>
+            <div class="review-name">Aimée G.</div>
+            <div class="review-date">Pointe-Noire · Mars 2026</div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <!-- LIVRAISON  horaires + WhatsApp -->
+  <section id="livraison" aria-labelledby="livraison-title">
+    <div class="section-center">
+      <h2 id="livraison-title" class="sec-title">Livraison Et Commande</h2>
+      <p class="sec-sub">Recevez vos plats préférés directement chez vous, chauds et savoureux</p>
+    </div>
+    <ul class="delivery-grid" style="list-style:none;padding:0">
+      <li class="delivery-card reveal">
+        <div class="delivery-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        </div>
+        <strong>Livraison Rapide</strong>
+        <span>20 - 40 minutes en moyenne</span>
       </li>
-      <li class="feat-row">
-        <div class="feat-icon">
-          <!-- heart icon -->
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+      <li class="delivery-card reveal">
+        <div class="delivery-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
         </div>
-        <div class="feat-text">
-          <strong>Ingrédients Frais</strong>
-          <span>Nous sélectionnons avec soin les meilleurs ingrédients pour garantir qualité et saveurs authentiques.</span>
-        </div>
+        <!-- HORAIRES D'OUVERTURE — AJOUTÉ -->
+        <strong>Horaires d'ouverture</strong>
+        <span>Tous les jours<br>10h00 - 22h00</span>
       </li>
-      <li class="feat-row">
-        <div class="feat-icon">
-          <!-- award icon -->
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="6"/><path d="M15.477 12.89L17 22l-5-3-5 3 1.523-9.11"/></svg>
+      <li class="delivery-card reveal">
+        <div class="delivery-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
         </div>
-        <div class="feat-text">
-          <strong>Excellence Reconnue</strong>
-          <span>Notre engagement envers la qualité nous a valu la confiance de milliers de clients satisfaits.</span>
+        <strong>Zone de Livraison</strong>
+        <span>Pointe-Noire et proche banlieue</span>
+      </li>
+      <!-- WHATSAPP canal principal de commande à PNR -->
+      <li class="delivery-card reveal">
+        <div class="delivery-icon delivery-icon-wa" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="white" width="32" height="32">
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+          </svg>
         </div>
+        <strong>Commandez sur WhatsApp</strong>
+        <a href="https://wa.me/242067890123" class="wa-link" target="_blank" rel="noopener noreferrer">+242 06 789 0123</a>
       </li>
     </ul>
-    <a href="#menu" class="btn-primary" style="display:inline-flex">
-      Découvrir notre menu
-      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
-    </a>
-  </div>
-</section>
 
-<!-- LIVRAISON -->
-<section id="livraison" aria-labelledby="livraison-title">
-  <div class="section-center">
-    <h2 id="livraison-title" class="sec-title">Livraison Et Commande</h2>
-    <p class="sec-sub">Recevez vos plats préférés directement chez vous, chauds et savoureux</p>
-  </div>
-  <ul class="delivery-grid">
-
-    <li class="delivery-card reveal">
-      <div class="delivery-icon">
-        <!-- clock svg -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      </div>
-      <strong>Livraison Rapide</strong>
-      <span>20 minutes en moyenne</span>
-    </li>
-
-    <li class="delivery-card reveal">
-      <div class="delivery-icon">
-        <!-- map-pin svg -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-      </div>
-      <strong>Zone de Livraison</strong>
-      <span>Pointe Noire et proche banlieue</span>
-    </li>
-
-    <li class="delivery-card reveal">
-      <div class="delivery-icon">
-        <!-- truck svg -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
-      </div>
-      <strong>Frais de Livraison</strong>
-      <span>À partir de 1000FCFA</span>
-    </li>
-
-    <li class="delivery-card reveal">
-      <div class="delivery-icon">
-        <!-- phone svg -->
-        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.08 6.08l1.17-.97a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-      </div>
-      <strong>Commande par Téléphone</strong>
-      <span>+242 06 000 000</span>
-    </li>
-
-  </ul>
-
-  <div class="promo-banner reveal">
-    <h2>Première Commande&nbsp;?</h2>
-    <p>Profitez de 20% de réduction sur votre première commande avec le code <strong>BIENVENUE20</strong></p>
-    <button type="button" class="btn-white" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">Commander Maintenant</button>
-  </div>
-</section>
+    <div class="promo-banner reveal">
+      <h2>Première Commande&nbsp;?</h2>
+      <p>Profitez de 20% de réduction sur votre première commande avec le code <strong>BIENVENUE20</strong> - à saisir dans votre panier</p>
+      <button type="button" class="btn-white" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">Commander Maintenant</button>
+    </div>
+  </section>
 </main>
 
 <!-- FOOTER -->
@@ -380,14 +481,17 @@
   <div class="footer-grid">
     <div>
       <div class="footer-logo">Table Ya Mama</div>
-      <p class="footer-desc">La meilleure cuisine africaine et congolaise, livrée directement chez vous. Authenticité, qualité et saveurs garanties.</p>
+      <p class="footer-desc">La meilleure cuisine congolaise et africaine, livrée directement chez vous à Pointe-Noire. Authenticité, qualité et saveurs garanties.</p>
       <div class="social-row">
-        <button class="social-btn" title="Facebook">
-          <svg viewBox="0 0 24 24" fill="white"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
-        </button>
-        <button class="social-btn" title="Instagram">
-          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
-        </button>
+        <a href="#" class="social-btn" title="Facebook" aria-label="Suivez-nous sur Facebook" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>
+        </a>
+        <a href="#" class="social-btn" title="Instagram" aria-label="Suivez-nous sur Instagram" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </a>
+        <a href="https://wa.me/242067890123" class="social-btn social-btn-wa" title="WhatsApp" aria-label="Contactez-nous sur WhatsApp" target="_blank" rel="noopener noreferrer">
+          <svg viewBox="0 0 24 24" fill="white" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+        </a>
       </div>
     </div>
     <div class="footer-col">
@@ -396,28 +500,38 @@
         <li><a href="#accueil">Accueil</a></li>
         <li><a href="#menu">Menu</a></li>
         <li><a href="#apropos">À propos</a></li>
+        <li><a href="#temoignages">Avis clients</a></li>
         <li><a href="#livraison">Livraison</a></li>
       </ul>
     </div>
     <div class="footer-col">
       <h4>Contact</h4>
-      <div class="contact-rows">
+      <address class="contact-rows" style="font-style:normal">
         <div class="contact-row">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-          <span>123 Rue de la République, Pointe Noire, Congo</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          <!-- adresse -->
+          <span>Avenue Charles de Gaulle, Pointe-Noire, Congo</span>
         </div>
         <div class="contact-row">
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.08 6.08l1.17-.97a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-          <span>+242 06 000 000</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9.91a16 16 0 0 0 6.08 6.08l1.17-.97a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          <!-- numéro de téléphone -->
+          <a href="tel:+242067890123" style="color:inherit">+242 06 789 0123</a>
         </div>
-        <div class="contact-row"> 
-          <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
-          <span>contact@saveurscongo.com</span>
+        <div class="contact-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          <!-- email -->
+          <a href="mailto:contact@tableyamama.com" style="color:inherit">contact@tableyamama.com</a>
         </div>
-      </div>
+
+        <div class="contact-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--red)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          <span>Ouvert tous les jours · 10h00 - 22h00</span>
+        </div>
+      </address>
     </div>
   </div>
-  <div class="footer-bottom">© 2026 Saveurs du Congo. Tous droits réservés.</div>
+  
+  <div class="footer-bottom">© 2026 Table Ya Mama. Tous droits réservés.</div>
 </footer>
 
 <script src="script.js"></script>
